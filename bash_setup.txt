@@ -1,1 +1,5 @@
 alias ll="ls -l"
+export PS1='\[\033[0;32m\]$(whoami)@$(hostname):\[\033[0;36m\]$(pwd)\[\033[0;0m\] $ '
+
+#For Mac Only
+sudo scutil --set <HostName>
