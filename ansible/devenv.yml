@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  become: yes
+  vars:
+    - user: 'michael'
+    - dotfiles_repo: 'git@github.com:taiwaiho624/Workflow.git'
+    - ssh_key: '.ssh/id_rsa'
+  
+  tasks:
+    - name : "Install system packages"
+      yum:
+        name:
+          - vim
+          - python3-pip
+          - tmux
+          - git
+        state: latest
+    - name: "Install Python packages"
+      pip:
+        name:
+          - poetry
+        state: latest
+    - name: "Check out dotfiles from repository"
+      git:
+        repo: "{{ dotfiles_repo }}"
+        dest: /home/{{ user }}/.dotfiles
+        accept_hostkey: yes
+        force: yes
+        recursive: no
+        key_file: "/home/{{ user }}/{{ ssh_key }}"
+      delegate_to: localhost
+      become: no
+      run_once: true
+    - name: Symlink dotfiles to home directory
+      command: >
+        cp /home/{{ user }}/.dotfiles/{{ item }} /home/{{ user }}/{{ item }}
+      loop:
+        - .bashrc
+        - .tmux.conf
+        - .gitconfig
+      become: no
