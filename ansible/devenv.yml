@@ -1,13 +1,37 @@
 ---
-- hosts: localhost
+- name: Main Playbook
+  hosts: localhost
   become: yes
   vars:
-    - user: 'michael'
+    - user: 'test'
     - dotfiles_repo: 'git@github.com:taiwaiho624/Workflow.git'
-    - ssh_key: '.ssh/id_rsa'
-  
+    - ssh_key: '.ssh/id_ed25519'
+    - local_user: 'michael'
   tasks:
-    - name : "Install system packages"
+    - name: Create a new user
+      user:
+        name: "{{user}}"
+        shell: /bin/bash
+        state: present
+    - name: Change user password
+      user:
+        name: test
+        update_password: always
+        password: "{{ 'test'|password_hash('sha512') }}"
+    - name: Add user to sudo group
+      user:
+        name: "{{user}}"
+        groups: wheel
+        append: yes
+    - name: Allow passwordless sudo for the user (CentOS/RHEL)
+      lineinfile:
+        path: /etc/sudoers.d/{{user}}
+        state: present
+        line: '{{user}} ALL=(ALL) NOPASSWD:ALL'
+        create: yes
+        mode: '0440'
+        validate: '/usr/sbin/visudo -cf %s'
+    - name: "Install system packages"
       yum:
         name:
           - vim
@@ -27,9 +51,7 @@
         accept_hostkey: yes
         force: yes
         recursive: no
-        key_file: "/home/{{ user }}/{{ ssh_key }}"
-      delegate_to: localhost
-      become: no
+        key_file: "/home/{{ local_user }}/{{ ssh_key }}"
       run_once: true
     - name: Copy dotfiles to home directory
       command: >
@@ -38,4 +60,3 @@
         - .bashrc
         - .tmux.conf
         - .gitconfig
-      become: no

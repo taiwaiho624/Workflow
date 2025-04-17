@@ -3,7 +3,7 @@ parse_git_branch() {
 }
 
 ###GENERAL###
-alias ll="ls -l"
+alias ll="ls -la"
 export PS1="\[\033[38;5;172m\]\[\][\[\]\T\[\]]\[\]\[\033[38;5;153m\]\u\[\]@${PLT_VM_NICKNAME:-\h}:\[\]\[\033[38;5;214m\]\w\[\e[91m\]\$(parse_git_branch)\[\e[00m\]$ "
 
 ###TMUX###
