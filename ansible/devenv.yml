@@ -31,7 +31,7 @@
       delegate_to: localhost
       become: no
       run_once: true
-    - name: Symlink dotfiles to home directory
+    - name: Copy dotfiles to home directory
       command: >
         cp /home/{{ user }}/.dotfiles/{{ item }} /home/{{ user }}/{{ item }}
       loop:
