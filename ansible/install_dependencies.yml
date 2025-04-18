@@ -1,0 +1,14 @@
+---
+- name: "Install system packages"
+  yum:
+    name:
+      - vim
+      - python3-pip
+      - tmux
+      - git
+    state: latest
+- name: "Install Python packages"
+  pip:
+    name:
+      - poetry
+    state: latest

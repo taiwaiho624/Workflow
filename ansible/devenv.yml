@@ -4,59 +4,13 @@
   become: yes
   vars:
     - user: 'test'
-    - dotfiles_repo: 'git@github.com:taiwaiho624/Workflow.git'
-    - ssh_key: '.ssh/id_ed25519'
-    - local_user: 'michael'
+    - dotfiles_repo: 'https://github.com/taiwaiho624/Workflow.git'
   tasks:
-    - name: Create a new user
-      user:
-        name: "{{user}}"
-        shell: /bin/bash
-        state: present
-    - name: Change user password
-      user:
-        name: test
-        update_password: always
-        password: "{{ 'test'|password_hash('sha512') }}"
-    - name: Add user to sudo group
-      user:
-        name: "{{user}}"
-        groups: wheel
-        append: yes
-    - name: Allow passwordless sudo for the user (CentOS/RHEL)
-      lineinfile:
-        path: /etc/sudoers.d/{{user}}
-        state: present
-        line: '{{user}} ALL=(ALL) NOPASSWD:ALL'
-        create: yes
-        mode: '0440'
-        validate: '/usr/sbin/visudo -cf %s'
-    - name: "Install system packages"
-      yum:
-        name:
-          - vim
-          - python3-pip
-          - tmux
-          - git
-        state: latest
-    - name: "Install Python packages"
-      pip:
-        name:
-          - poetry
-        state: latest
-    - name: "Check out dotfiles from repository"
-      git:
-        repo: "{{ dotfiles_repo }}"
-        dest: /home/{{ user }}/.dotfiles
-        accept_hostkey: yes
-        force: yes
-        recursive: no
-        key_file: "/home/{{ local_user }}/{{ ssh_key }}"
-      run_once: true
-    - name: Copy dotfiles to home directory
-      command: >
-        cp /home/{{ user }}/.dotfiles/{{ item }} /home/{{ user }}/{{ item }}
-      loop:
-        - .bashrc
-        - .tmux.conf
-        - .gitconfig
+    - name: "Set up new user"
+      import_tasks: create_user.yml
+    - name: "Disable password auth"
+      import_tasks: disable_pw_auth.yml
+    - name: "install system dependencies"
+      import_tasks: install_dependencies.yml
+    - name: "Set up dot files"
+      import_tasks: setup_dotfiles.yml

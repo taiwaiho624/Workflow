@@ -1,0 +1,12 @@
+---
+- name: Ensure password authentication is disabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+    state: present
+
+- name: Restart SSH service
+  service:
+    name: sshd
+    state: restarted

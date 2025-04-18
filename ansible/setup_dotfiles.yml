@@ -1,0 +1,13 @@
+---
+- name: "Check out dotfiles from repository"
+  git:
+    repo: "{{ dotfiles_repo }}"
+    dest: /home/{{ user }}/.dotfiles
+- name: Copy dotfiles to home directory
+  command: >
+    cp -r /home/{{ user }}/.dotfiles/{{ item }} /home/{{ user }}/{{ item }}
+  loop:
+    - .bashrc
+    - .tmux.conf
+    - .gitconfig
+    - .vim
