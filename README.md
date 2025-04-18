@@ -1,2 +1,3 @@
-1. sudo ./install_ansible.sh
-2. ansible-playbook ansible/devenv.yml
+yum install git
+sudo ./install_ansible.sh
+ansible-playbook ansible/devenv.yml
